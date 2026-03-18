@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_rfq_list" name="Submitted Portal RFQs">
+        <t t-call="portal.portal_layout">
+            <div class="container o_portal_my_doc">
+                <h2>My RFQs</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>RFQ</th>
+                            <th>Submitted Date</th>
+                            <th>Status</th>
+                            <th>Lines</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="rfqs" t-as="rfq">
+                            <td><a t-att-href="'/my/consign/rfq/%s' % rfq.id" t-esc="rfq.name"/></td>
+                            <td t-esc="rfq.x_portal_submitted_date"/>
+                            <td t-esc="rfq.state"/>
+                            <td t-esc="len(rfq.order_line)"/>
+                        </tr>
+                        <tr t-if="not rfqs">
+                            <td colspan="4" class="text-muted">No RFQs submitted yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <t t-call="portal.pager"/>
+            </div>
+        </t>
+    </template>
+</odoo>

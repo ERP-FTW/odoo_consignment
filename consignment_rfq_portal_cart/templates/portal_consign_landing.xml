@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_consign_landing" name="Consign Landing">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_my_doc container">
+                <h2>Consignment RFQ</h2>
+                <div class="list-group mt-3">
+                    <a class="list-group-item list-group-item-action" href="/my/consign/rfq">Create RFQ</a>
+                    <a class="list-group-item list-group-item-action" href="/my/consign/rfqs">My RFQs</a>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

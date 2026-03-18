@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_rfq_cart" name="Consign RFQ Cart">
+        <t t-call="portal.portal_layout">
+            <div class="container o_portal_my_doc">
+                <h2>RFQ Cart</h2>
+                <t t-if="error == 'empty'">
+                    <div class="alert alert-warning">Please add at least one line before submitting.</div>
+                </t>
+                <t t-if="not cart">
+                    <div class="alert alert-info">Your RFQ cart is empty.</div>
+                    <a href="/my/consign/rfq" class="btn btn-primary">Back to product picker</a>
+                </t>
+                <t t-if="cart">
+                    <form method="post" action="/my/consign/rfq/cart/update">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Qty</th>
+                                    <th>UoM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="cart.order_line" t-as="line">
+                                    <td t-esc="line.product_id.display_name"/>
+                                    <td>
+                                        <input type="number" min="0" step="0.01" class="form-control" t-att-name="'qty_%s' % line.id" t-att-value="line.product_qty"/>
+                                    </td>
+                                    <td t-esc="line.product_uom.name"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mb-3">
+                            <label class="form-label" for="x_portal_notes">Notes</label>
+                            <textarea class="form-control" name="x_portal_notes" id="x_portal_notes" rows="3"><t t-esc="cart.x_portal_notes or ''"/></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Cart</button>
+                    </form>
+                    <form method="post" action="/my/consign/rfq/submit" class="mt-3">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button type="submit" class="btn btn-success">Submit RFQ</button>
+                    </form>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

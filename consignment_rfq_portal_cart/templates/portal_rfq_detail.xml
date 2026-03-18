@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_rfq_detail" name="Portal RFQ Detail">
+        <t t-call="portal.portal_layout">
+            <div class="container o_portal_my_doc">
+                <h2>RFQ <span t-esc="rfq.name"/></h2>
+                <p>
+                    <strong>Submitted:</strong>
+                    <span t-esc="rfq.x_portal_submitted_date"/>
+                    <br/>
+                    <strong>Status:</strong>
+                    <span t-esc="rfq.state"/>
+                </p>
+                <p t-if="rfq.x_portal_notes">
+                    <strong>Notes:</strong>
+                    <span t-esc="rfq.x_portal_notes"/>
+                </p>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>UoM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="rfq.order_line" t-as="line">
+                            <td t-esc="line.product_id.display_name"/>
+                            <td t-esc="line.product_qty"/>
+                            <td t-esc="line.product_uom.name"/>
+                        </tr>
+                    </tbody>
+                </table>
+                <div t-if="rfq.message_ids" class="mt-4">
+                    <h4>Messages</h4>
+                    <ul class="list-group">
+                        <li class="list-group-item" t-foreach="rfq.message_ids[:10]" t-as="msg">
+                            <small class="text-muted" t-esc="msg.date"/> - <span t-raw="msg.body"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

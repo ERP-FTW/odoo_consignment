@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_rfq_products" name="Consign RFQ Product Picker">
+        <t t-call="portal.portal_layout">
+            <div class="container o_portal_my_doc">
+                <h2>Create RFQ</h2>
+                <form method="get" action="/my/consign/rfq" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Search by product name or code" t-att-value="search or ''"/>
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+                <t t-if="error == 'product'">
+                    <div class="alert alert-warning">This product is not available for consignment RFQ.</div>
+                </t>
+                <t t-if="error == 'qty'">
+                    <div class="alert alert-warning">Quantity must be greater than zero.</div>
+                </t>
+                <div class="d-flex justify-content-between mb-2">
+                    <div>Cart lines: <strong t-esc="cart_line_count"/></div>
+                    <a href="/my/consign/rfq/cart" class="btn btn-outline-secondary">View Cart</a>
+                </div>
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Code</th>
+                            <th>UoM</th>
+                            <th style="width: 220px;">Add</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="products" t-as="product">
+                            <td t-esc="product.display_name"/>
+                            <td t-esc="product.default_code or '-'"/>
+                            <td t-esc="product.uom_po_id.name"/>
+                            <td>
+                                <form method="post" action="/my/consign/rfq/add" class="d-flex gap-2">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="product_id" t-att-value="product.id"/>
+                                    <input type="number" name="qty" min="0.01" step="0.01" class="form-control" value="1" required="required"/>
+                                    <button type="submit" class="btn btn-primary btn-sm">Add</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <t t-call="portal.pager"/>
+            </div>
+        </t>
+    </template>
+</odoo>

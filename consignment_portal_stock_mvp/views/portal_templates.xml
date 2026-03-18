@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_consign_stock_filter_bar" name="Consignment Stock Filter Bar">
+        <form method="get" action="/my/consign/stock" class="row g-2 align-items-end mb-4">
+            <div class="col-12 col-md-4">
+                <label class="form-label" for="consign_stock_q">Product</label>
+                <input id="consign_stock_q" type="text" name="q" class="form-control" t-att-value="q" placeholder="Name or Internal Reference"/>
+            </div>
+            <div class="col-6 col-md-3">
+                <label class="form-label" for="consign_stock_date_from">Date from</label>
+                <input id="consign_stock_date_from" type="date" name="date_from" class="form-control" t-att-value="date_from"/>
+            </div>
+            <div class="col-6 col-md-3">
+                <label class="form-label" for="consign_stock_date_to">Date to</label>
+                <input id="consign_stock_date_to" type="date" name="date_to" class="form-control" t-att-value="date_to"/>
+            </div>
+            <div class="col-12 col-md-2 d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="submit" class="btn btn-primary">Apply</button>
+                <a href="/my/consign/stock" class="btn btn-secondary">Clear</a>
+            </div>
+        </form>
+    </template>
+
+    <template id="portal_consign_stock_page" name="Consignment Stock Portal Page">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_my_doc container">
+                <h2>Consignment Stock</h2>
+
+                <t t-call="consignment_portal_stock_mvp.portal_consign_stock_filter_bar"/>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">On Hand</h5>
+                                <p class="mb-1"><strong>Total Qty:</strong> <span t-esc="on_hand_total_qty"/></p>
+                                <p class="mb-0"><strong>Products:</strong> <span t-esc="on_hand_product_count"/></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Sold (Selected Range)</h5>
+                                <p class="mb-1"><strong>Total Qty:</strong> <span t-esc="sold_total_qty"/></p>
+                                <p class="mb-0"><strong>Products:</strong> <span t-esc="sold_product_count"/></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0">On Hand Inventory</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <t t-if="on_hand_rows">
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th class="text-end">Qty on hand</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="on_hand_rows" t-as="row">
+                                            <td>
+                                                <t t-set="product" t-value="row['product']"/>
+                                                <span t-esc="product.display_name if product else 'Unknown Product'"/>
+                                                <t t-if="product and product.default_code">
+                                                    <span class="text-muted">(<span t-esc="product.default_code"/>)</span>
+                                                </t>
+                                            </td>
+                                            <td class="text-end" t-esc="row['qty_on_hand']"/>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        <p t-else="" class="p-3 mb-0 text-muted">No on-hand consigned stock found for current filters.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Sold Inventory</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <t t-if="sold_rows">
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th class="text-end">Qty sold</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="sold_rows" t-as="row">
+                                            <td>
+                                                <t t-set="product" t-value="row['product']"/>
+                                                <span t-esc="product.display_name if product else 'Unknown Product'"/>
+                                                <t t-if="product and product.default_code">
+                                                    <span class="text-muted">(<span t-esc="product.default_code"/>)</span>
+                                                </t>
+                                            </td>
+                                            <td class="text-end" t-esc="row['qty_sold']"/>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        <p t-else="" class="p-3 mb-0 text-muted">No sold consigned stock found for current filters.</p>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

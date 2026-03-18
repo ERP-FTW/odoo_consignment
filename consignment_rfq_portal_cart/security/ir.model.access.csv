@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_order_portal_rfq,purchase.order portal rfq,purchase.model_purchase_order,base.group_portal,1,1,1,0
+access_purchase_order_line_portal_rfq,purchase.order.line portal rfq,purchase.model_purchase_order_line,base.group_portal,1,1,1,1
+access_product_product_portal_rfq,product.product portal rfq,product.model_product_product,base.group_portal,1,0,0,0
+access_product_template_portal_rfq,product.template portal rfq,product.model_product_template,base.group_portal,1,0,0,0
+access_uom_uom_portal_rfq,uom.uom portal rfq,uom.model_uom_uom,base.group_portal,1,0,0,0

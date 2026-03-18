@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_consignment_rfq_manager" model="res.groups">
+        <field name="name">Consignment RFQ Manager</field>
+        <field name="category_id" ref="base.module_category_inventory_purchase"/>
+        <field name="implied_ids" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+    </record>
+
+    <record id="purchase_order_portal_rfq_rule_read" model="ir.rule">
+        <field name="name">Portal own portal RFQ orders read</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('partner_id','=',user.partner_id.id),('x_portal_rfq','=',True)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="purchase_order_portal_rfq_rule_write" model="ir.rule">
+        <field name="name">Portal own draft portal RFQ orders edit</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('partner_id','=',user.partner_id.id),('x_portal_rfq','=',True),('x_portal_submitted','=',False)]</field>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="purchase_order_line_portal_rfq_rule_read" model="ir.rule">
+        <field name="name">Portal own portal RFQ lines read</field>
+        <field name="model_id" ref="purchase.model_purchase_order_line"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('order_id.partner_id','=',user.partner_id.id),('order_id.x_portal_rfq','=',True)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="purchase_order_line_portal_rfq_rule_write" model="ir.rule">
+        <field name="name">Portal own draft portal RFQ lines edit</field>
+        <field name="model_id" ref="purchase.model_purchase_order_line"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('order_id.partner_id','=',user.partner_id.id),('order_id.x_portal_rfq','=',True),('order_id.x_portal_submitted','=',False)]</field>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+</odoo>

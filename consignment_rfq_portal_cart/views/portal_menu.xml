@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_consignment" inherit_id="portal.portal_my_home" name="Portal Consignment Tile">
+        <xpath expr="//div[@id='portal_common_category']" position="inside">
+            <t t-if="request.env.user.has_group('base.group_portal') and request.env.user.partner_id.x_is_consigner">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/portal/static/src/img/portal-connection.svg'"/>
+                    <t t-set="title">Manage Consignment Orders</t>
+                    <t t-set="text">Create and review your consignment order requests</t>
+                    <t t-set="url" t-value="'/my/consign'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </t>
+        </xpath>
+    </template>
+</odoo>
