@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_consign_dashboard" name="Consignment Dashboard">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_my_doc container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Consignment Dashboard</h2>
+                    <a href="/my/consign/rfq" class="btn btn-primary">Build RFQ</a>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">My RFQs</h5>
+                                <p class="mb-1"><strong>Pending:</strong> <span t-esc="pending_count"/></p>
+                                <p class="mb-0"><strong>Accepted:</strong> <span t-esc="accepted_count"/></p>
+                                <t t-if="draft_cart">
+                                    <p class="mt-2 mb-0 text-muted">Draft cart: <a t-att-href="'/my/consign/rfq/cart'" t-esc="draft_cart.name"/></p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Company Inventory</h5>
+                                <p class="mb-1"><strong>Total Qty:</strong> <span t-esc="on_hand_total_qty"/></p>
+                                <p class="mb-0"><strong>Products:</strong> <span t-esc="on_hand_product_count"/></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Company Sales</h5>
+                                <p class="mb-1"><strong>Sold Qty:</strong> <span t-esc="sold_total_qty"/></p>
+                                <p class="mb-0"><strong>Products:</strong> <span t-esc="sold_product_count"/></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header"><h4 class="mb-0">Quick Actions</h4></div>
+                    <div class="card-body d-flex flex-wrap gap-2">
+                        <a href="/my/consign/rfq" class="btn btn-primary">Build RFQ</a>
+                        <a href="/my/consign/rfqs" class="btn btn-outline-primary">View My RFQs</a>
+                        <a href="/my/consign/stock" class="btn btn-outline-secondary">View Inventory / Sales</a>
+                    </div>
+                </div>
+
+                <form method="get" action="/my/consign" class="row g-2 align-items-end mb-4">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="consign_stock_q">Product</label>
+                        <input id="consign_stock_q" type="text" name="q" class="form-control" t-att-value="q" placeholder="Name or Internal Reference"/>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label" for="consign_stock_date_from">Date from</label>
+                        <input id="consign_stock_date_from" type="date" name="date_from" class="form-control" t-att-value="date_from"/>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label" for="consign_stock_date_to">Date to</label>
+                        <input id="consign_stock_date_to" type="date" name="date_to" class="form-control" t-att-value="date_to"/>
+                    </div>
+                    <div class="col-12 col-md-2 d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">Apply</button>
+                        <a href="/my/consign" class="btn btn-secondary">Clear</a>
+                    </div>
+                </form>
+
+                <div class="row g-3">
+                    <div class="col-12 col-xl-6">
+                        <div class="card h-100">
+                            <div class="card-header"><h4 class="mb-0">Pending RFQs</h4></div>
+                            <div class="card-body p-0">
+                                <table class="table mb-0">
+                                    <thead><tr><th>RFQ</th><th>Submitted</th><th>Status</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="pending_rfqs" t-as="rfq">
+                                            <td><a t-att-href="'/my/consign/rfq/%s' % rfq.id" t-esc="rfq.name"/></td>
+                                            <td t-esc="rfq.x_portal_submitted_date"/>
+                                            <td t-esc="rfq.state"/>
+                                        </tr>
+                                        <tr t-if="not pending_rfqs"><td colspan="3" class="text-muted">No pending RFQs.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-6">
+                        <div class="card h-100">
+                            <div class="card-header"><h4 class="mb-0">Accepted RFQs</h4></div>
+                            <div class="card-body p-0">
+                                <table class="table mb-0">
+                                    <thead><tr><th>RFQ</th><th>Submitted</th><th>Status</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="accepted_rfqs" t-as="rfq">
+                                            <td><a t-att-href="'/my/consign/rfq/%s' % rfq.id" t-esc="rfq.name"/></td>
+                                            <td t-esc="rfq.x_portal_submitted_date"/>
+                                            <td t-esc="rfq.state"/>
+                                        </tr>
+                                        <tr t-if="not accepted_rfqs"><td colspan="3" class="text-muted">No accepted RFQs.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-1">
+                    <div class="col-12 col-xl-6">
+                        <div class="card">
+                            <div class="card-header"><h4 class="mb-0">On Hand Inventory</h4></div>
+                            <div class="card-body p-0">
+                                <t t-if="on_hand_rows">
+                                    <table class="table mb-0">
+                                        <thead><tr><th>Product</th><th class="text-end">Qty on hand</th></tr></thead>
+                                        <tbody>
+                                            <tr t-foreach="on_hand_rows[:10]" t-as="row">
+                                                <td>
+                                                    <t t-set="product" t-value="row['product']"/>
+                                                    <span t-esc="product.display_name if product else 'Unknown Product'"/>
+                                                    <t t-if="product and product.default_code">
+                                                        <span class="text-muted">(<span t-esc="product.default_code"/>)</span>
+                                                    </t>
+                                                </td>
+                                                <td class="text-end" t-esc="row['qty_on_hand']"/>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <p t-else="" class="p-3 mb-0 text-muted">No on-hand consigned stock found for current filters.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6">
+                        <div class="card">
+                            <div class="card-header"><h4 class="mb-0">Sold Inventory</h4></div>
+                            <div class="card-body p-0">
+                                <t t-if="sold_rows">
+                                    <table class="table mb-0">
+                                        <thead><tr><th>Product</th><th class="text-end">Qty sold</th></tr></thead>
+                                        <tbody>
+                                            <tr t-foreach="sold_rows[:10]" t-as="row">
+                                                <td>
+                                                    <t t-set="product" t-value="row['product']"/>
+                                                    <span t-esc="product.display_name if product else 'Unknown Product'"/>
+                                                    <t t-if="product and product.default_code">
+                                                        <span class="text-muted">(<span t-esc="product.default_code"/>)</span>
+                                                    </t>
+                                                </td>
+                                                <td class="text-end" t-esc="row['qty_sold']"/>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <p t-else="" class="p-3 mb-0 text-muted">No sold consigned stock found for current filters.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

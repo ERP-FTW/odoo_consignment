@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_rfq_products" name="Consignment RFQ Builder">
+        <t t-call="portal.portal_layout">
+            <div class="container o_portal_my_doc">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Build RFQ</h2>
+                    <a href="/my/consign/rfq/cart" class="btn btn-outline-primary">
+                        Cart (<span t-esc="cart_line_count"/>)
+                    </a>
+                </div>
+                <form method="get" action="/my/consign/rfq" class="input-group mb-3">
+                    <input type="text" class="form-control" name="search" placeholder="Search by product name or code" t-att-value="search or ''"/>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                <t t-if="error == 'product'"><div class="alert alert-warning">This product is not available for consignment RFQ.</div></t>
+                <t t-if="error == 'qty'"><div class="alert alert-warning">Quantity must be greater than zero.</div></t>
+
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    <div class="col" t-foreach="products" t-as="product">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title" t-esc="product.display_name"/>
+                                <p class="text-muted mb-1" t-if="product.default_code">Ref: <span t-esc="product.default_code"/></p>
+                                <p class="text-muted mt-auto mb-2">UoM: <span t-esc="product.uom_po_id.name"/></p>
+                                <form method="post" action="/my/consign/rfq/add" class="d-flex gap-2 mt-2">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="product_id" t-att-value="product.id"/>
+                                    <input type="number" name="qty" min="0.01" step="0.01" class="form-control" value="1" required="required"/>
+                                    <button type="submit" class="btn btn-primary">Add</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <t t-call="portal.pager"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_rfq_cart" name="Consign RFQ Cart">
+        <t t-call="portal.portal_layout">
+            <div class="container o_portal_my_doc">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">RFQ Cart</h2>
+                    <a href="/my/consign/rfq" class="btn btn-outline-secondary">Continue browsing</a>
+                </div>
+                <t t-if="error == 'empty'"><div class="alert alert-warning">Please add at least one line before submitting.</div></t>
+                <t t-if="not cart">
+                    <div class="alert alert-info">Your RFQ cart is empty.</div>
+                </t>
+                <t t-if="cart">
+                    <t t-if="cart.x_portal_submitted"><div class="alert alert-info">This RFQ has been submitted and is now read-only.</div></t>
+                    <form method="post" action="/my/consign/rfq/cart/update">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr><th>Product</th><th style="width: 200px;">Qty</th><th>UoM</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="cart.order_line" t-as="line">
+                                        <td t-esc="line.product_id.display_name"/>
+                                        <td>
+                                            <input type="number" min="0" step="0.01" class="form-control" t-att-name="'qty_%s' % line.id" t-att-value="line.product_qty" t-att-readonly="'readonly' if cart.x_portal_submitted else None"/>
+                                        </td>
+                                        <td t-esc="line.product_uom.name"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="x_portal_notes">Notes</label>
+                            <textarea class="form-control" name="x_portal_notes" id="x_portal_notes" rows="3" t-att-readonly="'readonly' if cart.x_portal_submitted else None"><t t-esc="cart.x_portal_notes or ''"/></textarea>
+                        </div>
+                        <t t-if="not cart.x_portal_submitted">
+                            <button type="submit" class="btn btn-primary">Update Cart</button>
+                        </t>
+                    </form>
+                    <form t-if="not cart.x_portal_submitted" method="post" action="/my/consign/rfq/submit" class="mt-3">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button type="submit" class="btn btn-success">Submit RFQ</button>
+                    </form>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_rfq_list" name="Submitted Portal RFQs">
+        <t t-call="portal.portal_layout">
+            <div class="container o_portal_my_doc">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">My RFQs</h2>
+                    <a href="/my/consign/rfq" class="btn btn-primary">New RFQ</a>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr><th>RFQ</th><th>Submitted Date</th><th>Status</th><th>Lines</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="rfqs" t-as="rfq">
+                            <td><a t-att-href="'/my/consign/rfq/%s' % rfq.id" t-esc="rfq.name"/></td>
+                            <td t-esc="rfq.x_portal_submitted_date"/>
+                            <td t-esc="rfq.state"/>
+                            <td t-esc="len(rfq.order_line)"/>
+                        </tr>
+                        <tr t-if="not rfqs"><td colspan="4" class="text-muted">No RFQs submitted yet.</td></tr>
+                    </tbody>
+                </table>
+                <t t-call="portal.pager"/>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_rfq_detail" name="Portal RFQ Detail">
+        <t t-call="portal.portal_layout">
+            <div class="container o_portal_my_doc">
+                <h2>RFQ <span t-esc="rfq.name"/></h2>
+                <p>
+                    <strong>Submitted:</strong> <span t-esc="rfq.x_portal_submitted_date"/><br/>
+                    <strong>Status:</strong> <span t-esc="rfq.state"/>
+                </p>
+                <p t-if="rfq.x_portal_notes"><strong>Notes:</strong> <span t-esc="rfq.x_portal_notes"/></p>
+                <table class="table table-sm">
+                    <thead><tr><th>Product</th><th>Quantity</th><th>UoM</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="rfq.order_line" t-as="line">
+                            <td t-esc="line.product_id.display_name"/>
+                            <td t-esc="line.product_qty"/>
+                            <td t-esc="line.product_uom.name"/>
+                        </tr>
+                    </tbody>
+                </table>
+                <div t-if="rfq.message_ids" class="mt-4">
+                    <h4>Messages</h4>
+                    <ul class="list-group">
+                        <li class="list-group-item" t-foreach="rfq.message_ids[:10]" t-as="msg">
+                            <small class="text-muted" t-esc="msg.date"/> - <span t-raw="msg.body"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

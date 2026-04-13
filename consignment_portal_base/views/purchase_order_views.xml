@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_order_form_inherit_portal_rfq" model="ir.ui.view">
+        <field name="name">purchase.order.form.portal.rfq</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group" position="inside">
+                <group string="Portal RFQ" groups="purchase.group_purchase_user">
+                    <field name="x_portal_rfq"/>
+                    <field name="x_portal_submitted"/>
+                    <field name="x_portal_submitted_date" readonly="1"/>
+                    <field name="x_portal_notes"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_search_inherit_portal_rfq" model="ir.ui.view">
+        <field name="name">purchase.order.search.portal.rfq</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_purchases']" position="after">
+                <filter string="Portal RFQs" name="portal_rfqs" domain="[('x_portal_rfq', '=', True)]"/>
+                <filter string="Portal Submitted" name="portal_submitted_rfqs" domain="[('x_portal_submitted', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
